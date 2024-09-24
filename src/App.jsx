@@ -14,25 +14,35 @@ function App() {
 
   const [currentPosition, setCurrentPosition] = useState(shipRoute[0]);
   const [movingForward, setMovingForward] = useState(true);
-  const totalTime = 30000;  // Time to travel the route in milliseconds
+  const totalTime = 500000;  // Time to travel the route in milliseconds
   const updateInterval = 200; // Update position every 200 ms
   const numberOfSteps = Math.floor(totalTime / updateInterval);
+  const stepsPerSegment = numberOfSteps / (shipRoute.length - 1);  // Steps per segment
+
+  const interpolate = (start, end, progress) => {
+    return [
+      start[0] + (end[0] - start[0]) * progress,
+      start[1] + (end[1] - start[1]) * progress,
+    ];
+  };
 
   useEffect(() => {
     let step = 0;
 
     const moveShip = () => {
-      if (step <= numberOfSteps) {
-        const progress = step / numberOfSteps;
-        const route = movingForward ? shipRoute : shipRoute.slice().reverse();
-        const currentIndex = Math.floor(progress * (route.length - 1));
-        const nextIndex = Math.min(currentIndex + 1, route.length - 1);
+      const route = movingForward ? shipRoute : shipRoute.slice().reverse();
+      const segmentIndex = Math.floor(step / stepsPerSegment);
+      const progressInSegment = (step % stepsPerSegment) / stepsPerSegment;
 
-        const lat = route[currentIndex][0] + (progress * (route[nextIndex][0] - route[currentIndex][0]));
-        const lng = route[currentIndex][1] + (progress * (route[nextIndex][1] - route[currentIndex][1]));
+      if (segmentIndex < route.length - 1) {
+        const start = route[segmentIndex];
+        const end = route[segmentIndex + 1];
 
-        setCurrentPosition([lat, lng]);
+        const position = interpolate(start, end, progressInSegment);
+
+        setCurrentPosition(position);
         step++;
+
         setTimeout(moveShip, updateInterval);
       } else {
         setMovingForward(!movingForward);
@@ -43,29 +53,29 @@ function App() {
 
     moveShip();
 
-    return () => clearTimeout(moveShip);
+    return () => clearTimeout(moveShip); // Clear timeout when component unmounts
   }, [movingForward]);
 
-const oilSpillAreas = [
-  // Larger irregular oil spill area near Chennai
-  [
-    [12.75, 80.0],
-    [12.95, 80.6],
-    [12.88, 80.55],
-    [12.80, 80.45],
-    [12.78, 80.25],
-    [12.76, 80.1],
-  ],
-  // Larger irregular oil spill area near Port Blair
-  [
-    [11.4, 92.5],
-    [11.6, 92.85],
-    [11.55, 92.8],
-    [11.5, 92.65],
-    [11.42, 92.6],
-    [11.3, 92.58],
-  ],
-];
+  const oilSpillAreas = [
+    // Larger irregular oil spill area near the ocean, Chennai
+    [
+      [12.5, 81.0],
+      [12.7, 81.6],
+      [12.65, 81.55],
+      [12.60, 81.45],
+      [12.58, 81.25],
+      [12.55, 81.1],
+    ],
+    // Larger irregular oil spill area in the ocean near Port Blair
+    [
+      [11.2, 92.0],
+      [11.4, 92.35],
+      [11.35, 92.3],
+      [11.3, 92.15],
+      [11.22, 92.1],
+      [11.1, 92.08],
+    ],
+  ];
 
   const shipCondition = {
     status: 'Everything is fine',
@@ -75,8 +85,6 @@ const oilSpillAreas = [
 
   return (
     <Router>
-	  <div className="bg-blue-500 text-white p-6">Hello Tailwind!</div>
-
       <div className="flex flex-col h-screen">
         <nav className="bg-gray-800 text-white p-4">Navbar</nav>
 
