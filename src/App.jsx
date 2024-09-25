@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Polyline, Marker, Popup, Polygon, CircleMarker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import SatelliteImages from './satellite-images'; // Adjust the path if necessary
+import SatelliteImages from './satellite-images';
+import ShipDetails from './ShipDetails'; // Import ShipDetails
+import ShipDamageModel from './ShipDamageModel'; // Import ShipDamageModel
 
 function App() {
   const shipRoute = [
@@ -116,6 +118,10 @@ function App() {
                       Oil Leakage: {shipCondition.oilLeakage}
                       <br />
                       Damage: {shipCondition.damage}
+                      <br />
+                      <Link to="/ship-details">
+                        <button className="bg-blue-500 text-white px-2 py-1 rounded mt-2">View Details</button>
+                      </Link>
                     </Popup>
                   </CircleMarker>
 
@@ -133,12 +139,17 @@ function App() {
               } 
             />
             <Route path="/satellite-images" element={<SatelliteImages />} />
+            <Route path="/ship-details" element={<ShipDetails />} /> {/* ShipDetails route */}
+            <Route path="/ShipDamageModel" element={<ShipDamageModel />} /> {/* ShipDamageModel route */}
           </Routes>
         </div>
 
-        <div className="p-4">
+        <div className="p-4 flex space-x-4">
           <Link to="/satellite-images">
             <button className="bg-blue-500 text-white px-4 py-2 rounded">View Satellite Images</button>
+          </Link>
+          <Link to="/ship-details">
+            <button className="bg-green-500 text-white px-4 py-2 rounded">View Ship Details</button>
           </Link>
         </div>
       </div>
