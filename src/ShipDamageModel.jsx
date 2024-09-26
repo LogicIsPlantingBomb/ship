@@ -1,28 +1,77 @@
-import React, { useRef, useMemo, useState } from 'react';
-import { Canvas, useFrame, extend, useThree } from '@react-three/fiber';
+import React, { useRef, useMemo, useState, useEffect } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Line, Text } from '@react-three/drei';
 import * as THREE from 'three';
 
-const ShipDamageInfo = ({ damageInfo }) => (
-  <div className="absolute top-0 left-0 m-4 p-4 bg-white bg-opacity-80 rounded-lg shadow-md max-w-sm">
-    <h3 className="text-lg font-bold mb-2">Cargo Ship: MV Oceanic Explorer</h3>
-    <p><span className="font-semibold">Type:</span> Container Ship</p>
-    <p><span className="font-semibold">Length:</span> 300 meters</p>
-    <p><span className="font-semibold">Capacity:</span> 10,000 TEU</p>
-    <p><span className="font-semibold">Damage:</span> Hull breach on starboard side</p>
-    <p><span className="font-semibold">Incident Date:</span> September 15, 2024</p>
-    <p><span className="font-semibold">Oil Leak:</span> Potential fuel oil leak from damaged area</p>
-    {damageInfo && (
-      <div className="mt-4">
-        <h4 className="text-md font-bold">Damage Details:</h4>
-        <p>{damageInfo}</p>
-      </div>
-    )}
-  </div>
-);
+const AnimatedPieChart = ({ percentage, color, label }) => {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setProgress(percentage);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [percentage]);
+
+  const radius = 50;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
+
+  return (
+    <div className="inline-block mx-2 text-center">
+      <svg width="120" height="120" viewBox="0 0 120 120">
+        <circle
+          cx="60"
+          cy="60"
+          r={radius}
+          fill="transparent"
+          stroke="#e6e6e6"
+          strokeWidth="10"
+        />
+        <circle
+          cx="60"
+          cy="60"
+          r={radius}
+          fill="transparent"
+          stroke={color}
+          strokeWidth="10"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          transform="rotate(-90 60 60)"
+          style={{ transition: 'stroke-dashoffset 0.5s ease-out' }}
+        />
+        <text x="60" y="65" textAnchor="middle" fontSize="20" fill={color}>
+          {`${Math.round(progress)}%`}
+        </text>
+      </svg>
+      <p className="mt-2 text-sm font-semibold">{label}</p>
+    </div>
+  );
+};
+
+const ShipDamageInfo = ({ damageInfo }) => {
+  return (
+    <div className="absolute top-0 left-0 m-4 p-4 bg-white bg-opacity-80 rounded-lg shadow-md max-w-md">
+      <h3 className="text-lg font-bold mb-2">Cargo Ship: MV Oceanic Explorer</h3>
+      <p><span className="font-semibold">Type:</span> Container Ship</p>
+      <p><span className="font-semibold">Length:</span> 300 meters</p>
+      <p><span className="font-semibold">Capacity:</span> 10,000 TEU</p>
+      <p><span className="font-semibold">Damage:</span> Hull breach on starboard side</p>
+      <p><span className="font-semibold">Incident Date:</span> September 15, 2024</p>
+      <p><span className="font-semibold">Oil Leak:</span> Potential fuel oil leak from damaged area</p>
+
+      {damageInfo && (
+        <div className="mt-4">
+          <h4 className="text-md font-bold">Damage Details:</h4>
+          <p>{damageInfo}</p>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const DetailedShipOutline = ({ onDamageClick }) => {
-  const shipRef = useRef();
+	 const shipRef = useRef();
   const [hovered, setHovered] = useState(false);
 
   const createHullShape = useMemo(() => {
@@ -154,8 +203,8 @@ const DetailedShipOutline = ({ onDamageClick }) => {
       </mesh>
 
       {/* Damage Area */}
-      <mesh 
-        position={[0, 0, 5.01]} 
+      <mesh
+        position={[0, 0, 5.01]}
         onClick={() => onDamageClick('A hull breach on a cargo ship is a serious structural damage that compromises the integrity of the vessel. This type of damage can occur due to various reasons, including collisions, grounding, severe weather, or structural failures. The following description covers the essential aspects and implications of a damaged hull on a cargo ship.Puncture: A small but deep penetration often caused by sharp objects, such as debris or collision with a pier.Fracture: A crack or break in the hull structure, which can be caused by stress, fatigue, or impact.Deformation: Bending or warping of the hull, typically resulting from collisions or grounding.Corrosion: Gradual deterioration of the hull material due to exposure to seawater, often leading to thinning and weakening of the structure.')}
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
@@ -183,6 +232,7 @@ const DetailedShipOutline = ({ onDamageClick }) => {
       </Text>
     </group>
   );
+
 };
 
 const ThreeDShipModel = () => {
@@ -193,18 +243,24 @@ const ThreeDShipModel = () => {
   };
 
   return (
-    <div className="relative w-full h-screen">
-      <Canvas camera={{ position: [0, 10, 20], fov: 50 }}>
-        <ambientLight intensity={0.5} />
-        <spotLight position={[10, 20, 10]} angle={0.15} penumbra={1} />
-        <pointLight position={[-10, -10, -10]} />
-        <DetailedShipOutline onDamageClick={handleDamageClick} />
-        <OrbitControls />
-      </Canvas>
+    <div className="relative w-full h-screen flex flex-col justify-center items-center">
+      <div className="w-3/4 h-2/3">
+        <Canvas camera={{ position: [0, 10, 20], fov: 50 }}>
+          <ambientLight intensity={0.5} />
+          <spotLight position={[10, 20, 10]} angle={0.15} penumbra={1} />
+          <pointLight position={[-10, -10, -10]} />
+          <DetailedShipOutline onDamageClick={handleDamageClick} />
+          <OrbitControls />
+        </Canvas>
+      </div>
+      <div className="mt-4 flex justify-center">
+        <AnimatedPieChart percentage={75} color="#4CAF50" label="Structural Integrity" />
+        <AnimatedPieChart percentage={60} color="#2196F3" label="Cargo Safety" />
+        <AnimatedPieChart percentage={85} color="#FFC107" label="Fuel Containment" />
+      </div>
       <ShipDamageInfo damageInfo={damageInfo} />
     </div>
   );
 };
 
 export default ThreeDShipModel;
-
