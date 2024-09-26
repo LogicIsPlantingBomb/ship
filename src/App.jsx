@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import SatelliteImages from './satellite-images';
 import ShipDetails from './ShipDetails';
 import ShipDamageModel from './ShipDamageModel';
-import DamagedShipList from './DamageShipList'; // Import DamagedShipList
+import DamageShipList from './DamageShipList'; // Import DamagedShipList
 
 function App() {
   const shipRoute = [
@@ -79,15 +79,27 @@ function App() {
   ];
 
   const shipCondition = {
-    status: 'Everything is fine',
-    oilLeakage: 'No oil leakage detected',
-    damage: 'No damage reported',
+    status: 'Condition in Good but some damages',
+    oilLeakage: 'oil leakage detected',
+    damage: 'damage reported',
   };
 
   return (
     <Router>
       <div className="flex flex-col h-screen">
-        <nav className="bg-gray-800 text-white p-4">Navbar</nav>
+        <nav className="bg-gradient-to-r from-zinc-900 to-indigo-600 p-4 shadow-lg">
+          <div className="container mx-auto flex justify-between items-center">
+            <div className="flex items-center">
+              <img src="https://img.freepik.com/free-vector/hand-drawn-illustrated-container-ship_23-2149163917.jpg?t=st=1727358102~exp=1727361702~hmac=2f0bfba2bebc16668a38b77787aa06fd675c0c28b0eb2b897c45944f11c88729&w=826" alt="Logo" className="h-8 w-8 mr-2" />
+              <span className="text-white text-2xl font-bold">Ship Tracker</span>
+            </div>
+            <div className="space-x-4">
+              <Link to="/" className="text-white hover:text-gray-300 focus:text-gray-300 transition">Home</Link>
+              <Link to="/satellite-images" className="text-white hover:text-gray-300 focus:text-gray-300 transition">Satellite Images</Link>
+              <Link to="/damaged-ships" className="text-white hover:text-gray-300 focus:text-gray-300 transition">Damaged Ships</Link>
+            </div>
+          </div>
+        </nav>
 
         <div className="flex-1 flex justify-center items-center">
           <Routes>
@@ -140,16 +152,16 @@ function App() {
             <Route path="/satellite-images" element={<SatelliteImages />} />
             <Route path="/ship-details" element={<ShipDetails />} />
             <Route path="/ShipDamageModel" element={<ShipDamageModel />} />
-            <Route path="/damaged-ships" element={<DamagedShipList />} /> {/* DamagedShipList route */}
+            <Route path="/damaged-ships" element={<DamageShipList />} /> {/* DamagedShipList route */}
           </Routes>
         </div>
 
-        <div className="p-4 flex space-x-4">
+        <div className="p-4 flex justify-center space-x-4">
           <Link to="/satellite-images">
-            <button className="bg-blue-500 text-white px-4 py-2 rounded">View Satellite Images</button>
+            <button className="bg-blue-500 text-white px-4 py-2 rounded shadow-md hover:bg-blue-600 transition">View Satellite Images</button>
           </Link>
           <Link to="/damaged-ships">
-            <button className="bg-red-500 text-white px-4 py-2 rounded">View Damaged Ships</button> {/* New button */}
+            <button className="bg-red-500 text-white px-4 py-2 rounded shadow-md hover:bg-red-600 transition">View Damaged Ships</button> {/* New button */}
           </Link>
         </div>
       </div>
