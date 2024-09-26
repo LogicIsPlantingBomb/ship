@@ -3,8 +3,9 @@ import { MapContainer, TileLayer, Polyline, Marker, Popup, Polygon, CircleMarker
 import 'leaflet/dist/leaflet.css';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import SatelliteImages from './satellite-images';
-import ShipDetails from './ShipDetails'; // Import ShipDetails
-import ShipDamageModel from './ShipDamageModel'; // Import ShipDamageModel
+import ShipDetails from './ShipDetails';
+import ShipDamageModel from './ShipDamageModel';
+import DamagedShipList from './DamageShipList'; // Import DamagedShipList
 
 function App() {
   const shipRoute = [
@@ -55,11 +56,10 @@ function App() {
 
     moveShip();
 
-    return () => clearTimeout(moveShip); // Clear timeout when component unmounts
+    return () => clearTimeout(moveShip);
   }, [movingForward]);
 
   const oilSpillAreas = [
-    // Larger irregular oil spill area near the ocean, Chennai
     [
       [12.5, 81.0],
       [12.7, 81.6],
@@ -68,7 +68,6 @@ function App() {
       [12.58, 81.25],
       [12.55, 81.1],
     ],
-    // Larger irregular oil spill area in the ocean near Port Blair
     [
       [11.2, 92.0],
       [11.4, 92.35],
@@ -139,8 +138,9 @@ function App() {
               } 
             />
             <Route path="/satellite-images" element={<SatelliteImages />} />
-            <Route path="/ship-details" element={<ShipDetails />} /> {/* ShipDetails route */}
-            <Route path="/ShipDamageModel" element={<ShipDamageModel />} /> {/* ShipDamageModel route */}
+            <Route path="/ship-details" element={<ShipDetails />} />
+            <Route path="/ShipDamageModel" element={<ShipDamageModel />} />
+            <Route path="/damaged-ships" element={<DamagedShipList />} /> {/* DamagedShipList route */}
           </Routes>
         </div>
 
@@ -148,8 +148,8 @@ function App() {
           <Link to="/satellite-images">
             <button className="bg-blue-500 text-white px-4 py-2 rounded">View Satellite Images</button>
           </Link>
-          <Link to="/ship-details">
-            <button className="bg-green-500 text-white px-4 py-2 rounded">View Ship Details</button>
+          <Link to="/damaged-ships">
+            <button className="bg-red-500 text-white px-4 py-2 rounded">View Damaged Ships</button> {/* New button */}
           </Link>
         </div>
       </div>
